@@ -1,0 +1,90 @@
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<< css property for navbar searchbar >>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
+nav form.navbar-form {
+  display: flex;
+  position: relative;}
+
+#search.form-control {
+  
+  border-radius: 20px;
+  margin-bottom: 0;
+  margin-top: 14px;
+  width: 100%;
+  font-size: 13px;
+  padding-right: 28px;
+  box-sizing: border-box;
+}
+
+#search.form-control + .btn {
+  margin-top: 15px;
+  position: absolute;
+  right: 9px;
+  top: 2px;
+  bottom: 4px;
+  z-index: 1;
+  padding: 0;
+}
+#search.form-control + .btn:active,
+#search.form-control + .btn:focus {
+  box-shadow: none;
+}
+#search:active,
+#search:focus {
+  box-shadow: none;
+  border: 2px solid #007bff;
+}  
+.btn:hover {
+  cursor: pointer;
+}
+/* <<<<<<<<<<<<<<<<<< css property for all  navbar element( a, ul and li(signup, article, login, category)) >>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
+a.h1{
+  
+}
+
+#nav-ul {
+  list-style-type: none;
+  overflow: hidden;
+  display: flex;
+  justify-content:space-evenly;
+  width: 50%;
+  margin-top: 12px;
+}
+#nav-anchor {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+.logo-anchor{
+  margin-left: 10%;
+}
+.navbar-light{
+  display: flex;
+  justify-content:center;
+}
+/* <<<<<<<<<< css property for data display >>>>>>>>>>>>>>>> */
+
+h1.head-name{
+text-transform: capitalize;
+font-weight:bold;
+background-color: rgb(227, 253, 252);
+border-radius:5px ;
+}
+a{
+  color: black;
+  font-weight: bold;
+}
+.card-text:hover{
+    color:red;
+    text-decoration: none;
+  }
+
+
+
+
+
+
+
+
+  

@@ -1,0 +1,36 @@
+{% extends 'newbase.html' %}
+
+{% block title %}
+Create User
+{% endblock %}
+<link rel="stylesheet" href="/static/style.css">
+{% block content %}
+<body class="{% block body_class %}{% endblock %}">
+    <nav class="navbar navbar-expand">
+      <div class="container-fluid">
+        <div class="navbar-header">
+        </div>
+    
+        <ul class="nav navbar-nav navbar-right"> 
+          {% if request.endpoint != None %}
+          {% endif %}
+          {% if not g.user %}      
+          <li><a href="/register" style="text-decoration:none;">Sign up</a></li>
+          <li><a href="/login" style="text-decoration:none;">Log in</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+    <!-- {% for a in category %}
+   
+    <div class="article-box">
+        <a href="{{a.url}}" style="text-decoration:none;
+                                   background-image:url({{a.Image_URL}});
+                                   ">
+            {{a.name}}
+        </a>
+    </div> 
+    {% endfor %}   -->
+
+
+{% endblock %}
