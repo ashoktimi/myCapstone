@@ -1,13 +1,13 @@
 # import requests
 # import json
-# from app import app
+from app import app
 from mypackage.models import db, User, Category, Article, CategoryArticle
 # from mypackage.apidata import SUPER_SECRET_KEY
 
 # API_BASE_URL = "https://newsapi.org/v2"
 
 # API_SECRET_KEY=SUPER_SECRET_KEY
-# app.app_context().push()
+app.app_context().push()
 db.drop_all()
 db.create_all()
 
