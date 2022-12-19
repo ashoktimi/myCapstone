@@ -1,21 +1,16 @@
 
 {% extends 'base.html' %}
-
-{% block title %}
-Create User
-{% endblock %}
-
+{% block title %}Create User{% endblock %}
 {% block content %}
-{% for a in category %}
-<div class="jumbotron jumbotron-fluid" style="margin-top:15px;">    
-    <div class="container" style="display:flex; justify-content:center">
-      <a class="display-4" href="/category/{{a.id}}" 
-      style="text-decoration:none; 
+  {% for a in category %}
+    <div class="jumbotron jumbotron-fluid" style="margin-top:15px;">    
+      <div class="container" style="display:flex; justify-content:center">
+        <a class="display-4" href="/category/{{a.id}}" 
+          style="text-decoration:none; 
             text-transform:capitalize;">
         {{a.name}}
         </a>      
-    </div>     
-  </div>
-
+      </div>     
+    </div>
   {% endfor %} 
 {% endblock %}

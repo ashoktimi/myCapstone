@@ -27,40 +27,40 @@ for result in [*set(r)]:
     db.session.commit()
 
 def name_list1():
-    return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="general" ]
+    return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="general" if x['language']=='en' ]
 def name_list2(): 
-    return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="business" ]
+    return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="business" if x['language']=='en']
 def name_list3(): 
-    return[x['url'].split("/")[2] for x in results['sources'] if x['category']=="technology" ]
+    return[x['url'].split("/")[2] for x in results['sources'] if x['category']=="technology" if x['language']=='en']
 def name_list4(): 
-    return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="entertainment" ]
+    return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="entertainment" if x['language']=='en']
 def name_list5(): 
-    return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="science" ]
+    return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="science" if x['language']=='en']
 def name_list6(): 
-    return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="sports" ]
+    return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="sports" if x['language']=='en']
 def name_list7(): 
-    return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="health" ]
+    return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="health" if x['language']=='en']
 
 g= [*set(name_list1())]
-general = ','.join(g)
+general_domain = ','.join(g)
 
 b= [*set(name_list2())]
-business=','.join(b)
+business_domain=','.join(b)
 
 t= [*set(name_list3())]
-technology= ','.join(t)
+technology_domain= ','.join(t)
 
 e= [*set(name_list4())]
-entertainment= ','.join(e)
+entertainment_domain= ','.join(e)
 
 s= [*set(name_list5())]
-science= ','.join(s)
+science_domain= ','.join(s)
 
 sp= [*set(name_list6())]
-sports= ','.join(sp)
+sports_domain= ','.join(sp)
 
 h = [*set(name_list7())]
-health= ','.join(h)
+health_domain= ','.join(h)
 
 
 
@@ -68,7 +68,7 @@ health= ','.join(h)
 
 # ############## getting article data for category general #########################
 
-response1 = requests.get(f"{API_BASE_URL}/everything", params={'domains':general,'apiKey':API_SECRET_KEY})
+response1 = requests.get(f"{API_BASE_URL}/everything", params={'domains':general_domain,'apiKey':API_SECRET_KEY})
 data1 = response1.json()
 for article in data1['articles']:
     author =article['author']
@@ -104,8 +104,11 @@ for ag in lst1:
         db.session.commit()
 
 
+
+
+
 # ############## getting article data for category business #########################
-response2 = requests.get(f"{API_BASE_URL}/everything", params={'domains':business,'apiKey':API_SECRET_KEY})
+response2 = requests.get(f"{API_BASE_URL}/everything", params={'domains':business_domain,'apiKey':API_SECRET_KEY})
 data2 = response2.json()
 for article in data2['articles']:
     author =article['author']
@@ -141,7 +144,7 @@ for ag in lst2:
 
 
 # # ############## getting article data for category technology #########################
-response3 = requests.get(f"{API_BASE_URL}/everything", params={'domains':technology,'apiKey':API_SECRET_KEY})
+response3 = requests.get(f"{API_BASE_URL}/everything", params={'domains':technology_domain,'apiKey':API_SECRET_KEY})
 data3 = response3.json()
 for article in data3['articles']:
     author =article['author']
@@ -177,7 +180,7 @@ for ag in lst3:
         db.session.commit()
 
 # # ############## getting article data for category entertainment #########################
-response4 = requests.get(f"{API_BASE_URL}/everything", params={'domains':entertainment,'apiKey':API_SECRET_KEY})
+response4 = requests.get(f"{API_BASE_URL}/everything", params={'domains':entertainment_domain,'apiKey':API_SECRET_KEY})
 data4 = response4.json()
 
 for article in data4['articles']:
@@ -215,7 +218,7 @@ for ag in lst4:
 
 # # ############## getting article data for category science #########################
 
-response5 = requests.get(f"{API_BASE_URL}/everything", params={'domains':science,'apiKey':API_SECRET_KEY})
+response5 = requests.get(f"{API_BASE_URL}/everything", params={'domains':science_domain,'apiKey':API_SECRET_KEY})
 data5 = response5.json()
 for article in data5['articles']:
     author =article['author']
@@ -251,7 +254,7 @@ for ag in lst5:
         db.session.commit()
 
 # # ############## getting article data for category sports #########################
-response6 = requests.get(f"{API_BASE_URL}/everything", params={'domains':sports,'apiKey':API_SECRET_KEY})
+response6 = requests.get(f"{API_BASE_URL}/everything", params={'domains':sports_domain,'apiKey':API_SECRET_KEY})
 data6 = response6.json()
 
 
@@ -291,7 +294,7 @@ for ag in lst6:
 # # ############## getting article data for category health #########################
 
 
-response7 = requests.get(f"{API_BASE_URL}/everything", params={'domains':health,'apiKey':API_SECRET_KEY})
+response7 = requests.get(f"{API_BASE_URL}/everything", params={'domains':health_domain,'apiKey':API_SECRET_KEY})
 data7 = response7.json()
 
 for article in data7['articles']:

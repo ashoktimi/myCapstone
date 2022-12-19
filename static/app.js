@@ -97,7 +97,16 @@ $(document).on('click', '.makefavorite', function(e){
   e.preventDefault(); 
   const id = $(this).data('id') 
   location.assign(`http://127.0.0.1:5000/favorites/articles/${id}`);
+  
 });
+
+// $(document).on('click', '.removefavorite', function(e){ 
+//   e.preventDefault(); 
+//   const id = $(this).data('id') 
+//   location.assign(`http://127.0.0.1:5000/favorites/articles/${id}`);
+// });
+
+
 
 
 // http://127.0.0.1:5000/article
@@ -165,10 +174,17 @@ $(document).ready(function(){
 $("#myForm").submit(function(e){
   e.preventDefault();        
   let searchvalue = $("#search").val();
-    $(".maincontent").remove();
-    $("p").append(`Displaying results for ${searchvalue}`)
-    let url = `http://127.0.0.1:5000/api/get_articles/query_data/${searchvalue}`
-         axios.get(url)
+  // let h3 = document.createElement("h3")
+  // h3.append(`Displaying results for ${searchvalue}`)
+  $(".maincontent").remove();    
+  let url = `http://127.0.0.1:5000/api/get_articles/query_data/${searchvalue}`
+  addArticle(url)  
+  $("#myForm").reset();
+});
+})
+
+function addArticle(url){
+  axios.get(url)
           .then( res => {
             res.data.articles.forEach( result => $(".container").append(
             `
@@ -182,18 +198,11 @@ $("#myForm").submit(function(e){
                         <small>${result.content}</small>                      
                     </div>
                 </div>        
-              </div>            
-            `
+              </div> 
+            `  
     ))    
-  })
-});
 })
-
-
-
-
-
-
+}
 
 
 

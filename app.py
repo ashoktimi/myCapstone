@@ -208,11 +208,11 @@ def delete_article(article_id):
 
 @app.route('/')
 def index_page():
-#     """Renders html template that includes some JS - NOT PART OF JSON API!"""
-#     category = Category.query.all()
-#     article = Article.query.all()
-#     return render_template('index.html', article=article, category=category)
-    return render_template('base.html')
+    """Renders html template that includes some JS - NOT PART OF JSON API!"""
+    category = Category.query.all()
+    article = Article.query.all()
+    return render_template('index.html', article=article, category=category)
+    # return render_template('base.html')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -287,9 +287,15 @@ def logout():
 
 @app.route('/article')
 def show_article():
+    if "username" not in session:
+        raise Unauthorized()
+    username = session['username']
     article = Article.query.all()
+    user = User.query.filter_by(username=username).first()
+    favart = Favorite.query.filter_by(user_id=user.id)
+    found_article = [a.favoriteArticle_id for a in favart]
     category = Category.query.all()
-    return render_template('index.html', article=article, category=category, favart=favart)
+    return render_template('index.html', article=article, category=category, favart=favart, found_article=found_article)
 
 
 @app.route('/category')
@@ -306,20 +312,19 @@ def show_category(cat_id):
     catart = category.category_article
     user = User.query.filter_by(username=username).first()
     favart = Favorite.query.filter_by(user_id=user.id)
-    return render_template('article/show.html', allarticle=catart, cat=category, favart=favart)
+    found_article = [a.favoriteArticle_id for a in favart]
+    return render_template('article/show.html', allarticle=catart, cat=category, favart=favart, found_article=found_article)
 
 
 @app.route('/users/favorites/<username>')
 def favorite_page(username):
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-    category = Category.query.all()
+    if "username" not in session or username != session['username']:
+        raise Unauthorized()
     user = User.query.filter_by(username=username).first()
+    # article = Favorite.query.filter_by(user_id=user.id)
     article = user.user_article
-    form = DeleteForm()
     return render_template("/user/favorites.html", 
-                            article=article, user=user, form=form, category=category)
+                            article=article, user=user)
 
 # @app.route('/users/favorite/<int:article_id>', methods=['POST'])
 # def add_article_to_favorite(article_id):
@@ -368,21 +373,32 @@ def add_song_to_playlist(username):
                          form=form)
 
 
+
+
 @app.route('/favorites/articles/<int:id>')
 def add_favorite(id):
     """Creates a new article and returns JSON of that created article"""
     if "username" not in session:
         raise Unauthorized()
     username = session['username']
-    user = User.query.filter_by(username=username).first()
-    u_id = user.id
-    article_id = id
-   
-    new_fav = Favorite(user_id=u_id, 
-                       favoriteArticle_id=article_id
+    user = User.query.filter_by(username=username).first()    
+    favart =  user.user_article 
+    found_article = [a.id for a in favart]
+    article = Favorite.query.filter_by(favoriteArticle_id=id).filter_by(user_id=user.id).first()
+    if id in found_article:
+        db.session.delete(article)
+        db.session.commit()    
+    else:
+        new_fav = Favorite(user_id=user.id, 
+                       favoriteArticle_id=id
                        )
-    db.session.add(new_fav)
-    db.session.commit()
+        db.session.add(new_fav)
+        db.session.commit()
 
     return redirect (f"/users/favorites/{username}")
 
+
+API_BASE_URL = "https://newsapi.org/v2"
+
+res = requests.get(f"{API_BASE_URL}/top-headlines/sources",
+                        params={'apiKey':API_SECRET_KEY})

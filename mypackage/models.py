@@ -16,6 +16,15 @@ def connect_db(app):
     db.init_app(app)
 
 
+
+class Favorite(db.Model):
+    """user can save article as favourite"""
+
+    __tablename__ = 'favorites'
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
+    favoriteArticle_id = db.Column(db.Integer, db.ForeignKey('articles.id', ondelete='CASCADE'), primary_key=True)
+
 class User(db.Model):
     """User in the system."""
 
@@ -63,8 +72,7 @@ class User(db.Model):
         if user and bcrypt.check_password_hash(user.password, pwd):
             return user
         else:
-            return False
-        
+            return False        
 
     user_article = db.relationship("Article",  secondary='favorites', backref="users")
     
@@ -103,11 +111,6 @@ class Article(db.Model):
     content =  db.Column(db.Text) 
 
 
-    def is_favorite(self, other_article):
-        """Is this article is in fav_article"""
-
-        found_article = [news for news in self.user_article if news == other_article]
-        return len(found_article) == 1
 
 
     def article_serialize(self):
@@ -131,16 +134,6 @@ class CategoryArticle(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id', ondelete='CASCADE'), nullable=False)
     article_id = db.Column(db.Integer, db.ForeignKey('articles.id', ondelete='CASCADE'), nullable=False)
-
-
-class Favorite(db.Model):
-    """user can save article as favourite"""
-
-    __tablename__ = 'favorites'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
-    favoriteArticle_id = db.Column(db.Integer, db.ForeignKey('articles.id', ondelete='CASCADE'), nullable=False)
 
 
 

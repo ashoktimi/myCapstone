@@ -6,12 +6,9 @@ Create User
 {% endblock %}
 <link rel="stylesheet" href="/static/style.css">
 {% block content %}
-<!-- <a class="btn btn-primary" href="/users/{{user.username}}/favorites/add_article">
-  Add Song To Playlist
-</a> -->
 
-<div class="text-primary">Hi {{ user.username }}, Here is your favorite articles:</div>
 
+<div class="text-primary" style="margin-left:1rem;" >Hi {{ user.username }}, Here is your favorite articles:</div>
 <div class="container-fluid" style="background-color:rgb(255, 255, 255); padding-top:5px; border-radius: .5rem;">
   <div class="container-fluid">
     <div class="row">
@@ -21,18 +18,21 @@ Create User
     </div>
   </div>
     <div class="row">
-  {% for a in article %}
-      <div class="col-12 col-sm-6 col-xl-4" style="margin-top:3rem ;">
+      {% for a in article %}
+      <div class="col-12 col-sm-6 col-xl-4" style="margin-top:3rem;">         
         <div class="card">
           <img src="{{a.Image_URL}}" class="card-img-top" alt=""> 
           <div class="card-body">
-            <a class="card-text" href={{a.url}}>{{a.title}}</a>
+            <div>
+              <a class="card-text" href={{a.url}}>{{a.title}}</a>
+              <button type="button" class="btn btn-light btn-sm" id="removefavorite"> 
+                <img src='/static/images/favorite.png' style="width: 1.5rem; height: 1.5rem;" alt="submit form">
+              </button> 
+            </div> 
           </div>       
         </div>
-      </div> 
+      </div>
       {% endfor %} 
     </div> 
-  </div>   
-  <p>
-
+  </div>
 {% endblock %}

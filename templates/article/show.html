@@ -1,6 +1,5 @@
 
 {% extends 'base.html' %}
-
 {% block title %}
 Create User
 {% endblock %}
@@ -21,35 +20,36 @@ Create User
   </div>
   <div class="row">
   {% for a in allarticle %}
-    {% for fav in favart %}
-      <div class="col-12 col-sm-6 col-xl-4" style="margin-top:3rem ;">        
-        <div class="card">          
-          <img src="{{a.Image_URL}}" class="card-img-top" alt=""> 
-          <div class="card-body">
-            <div>
-              <a class="card-text" href={{a[fav].url}}>{{a[fav].title}}</a>
-              <button type="button" class="btn btn-light btn-sm" id="removefavorite"> 
-                <img src='/static/images/favorite.png' style="width: 1.5rem; height: 1.5rem;" alt="submit form">
-              </button> 
-            </div> 
-          </div>       
-        </div>
-      </div> 
-    {% endfor %}
-      <div class="col-12 col-sm-6 col-xl-4" style="margin-top:3rem ;">
-        <div class="card">
-          <img src="{{a.Image_URL}}" class="card-img-top" alt=""> 
-          <div class="card-body">
-            <div>
-              <a class="card-text" href={{a.url}}>{{a.title}}</a>
-              <button type="button" class="btn btn-light btn-sm makefavorite" data-id="{{a.id}}"> 
-                <img src='/static/images/makefavorite.png' style="width: 1.5rem; height: 1.5rem;" alt="submit form">
-              </button> 
-          </div>            
-          </div>       
-        </div>
-      </div> 
-      {% endfor %} 
+  {% if a.id in found_article %}                
+  <div class="col-12 col-sm-6 col-xl-4" style="margin-top:3rem;">         
+    <div class="card">
+      <img src="{{a.Image_URL}}" class="card-img-top" alt=""> 
+      <div class="card-body">
+        <div>
+          <a class="card-text" href={{a.url}}>{{a.title}}</a>
+          <button type="button" class="btn btn-light btn-sm" id="removefavorite"> 
+            <img src='/static/images/favorite.png' style="width: 1.5rem; height: 1.5rem;" alt="submit form">
+          </button> 
+        </div> 
+      </div>       
+    </div>
+  </div>
+   {% else %}          
+    <div class="col-12 col-sm-6 col-xl-4" style="margin-top:3rem ;">
+      <div class="card">
+        <img src="{{a.Image_URL}}" class="card-img-top" alt=""> 
+        <div class="card-body">
+          <div>
+            <a class="card-text" href={{a.url}}>{{a.title}}</a>
+            <button type="button" class="btn btn-light btn-sm makefavorite" data-id="{{a.id}}"> 
+              <img src='/static/images/makefavorite.png' style="width: 1.5rem; height: 1.5rem;" alt="submit form">
+            </button> 
+        </div>            
+        </div>       
+      </div>
+    </div> 
+  {% endif %} 
+  {% endfor %} 
     </div> 
   </div>  
 

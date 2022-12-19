@@ -39,7 +39,11 @@
         <a href="/" style="margin-left: 17px; text-decoration:none;">
           <h1 style="font-weight:.3rem; font-style:bold;">@news</h1>
         </a> 
-          <ul id="nav-ul" > 
+          <ul id="nav-ul" >           
+          {% if not g.user %}
+          <li style=" float: left;"><a href="/register" id="nav-anchor">Sign up</a></li>
+          <li style=" float: left;"><a href="/login" id="nav-anchor">Log in</a></li>
+          {% else %}  
           {% if request.endpoint != None %}      
           <li style="float:left;">             
             <form class="navbar-form navbar-right" id="myForm">
@@ -50,12 +54,7 @@
             </form>
           </li>
           {% endif %}
-          {% if not g.user %}
-          <li style=" float: left;"><a href="/register" id="nav-anchor">Sign up</a></li>
-          <li style=" float: left;"><a href="/login" id="nav-anchor">Log in</a></li>
-          {% else %}  
           <li style=" float: left;"><a href="/article" id="nav-anchor">Articles</a></li>
-          <li style=" float: left;"><a  class="getArticle" id="nav-anchor">Click ME</a></li>
           <li style=" float: left;"><a href="/category" id="nav-anchor">Categories</a></li>          
           <li style=" float: left;"><a href="/users/favorites/{{session['username']}}" id="nav-anchor">Favorites</a></li>
           <li style=" float: left;"><a href="/logout"  id="nav-anchor">Log out</a></li>
@@ -93,9 +92,5 @@ crossorigin="anonymous"></script>
 integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" 
 crossorigin="anonymous"></script>
 <script src="static/app.js"></script>
-<!-- <script src="static/models.js"></script>
-<script src="static/main.js"></script>
-<script src="static/nav.js"></script>
-<script src="static/articles.js"></script> -->
 </body>
 </html>
