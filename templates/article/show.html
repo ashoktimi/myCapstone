@@ -1,56 +1,100 @@
 
 {% extends 'base.html' %}
-{% block title %}
-Create User
-{% endblock %}
-<link rel="stylesheet" href="/static/style.css">
 {% block content %}
-
-<div class="container-fluid" style="background-color:rgb(255, 255, 255); padding-top:5px; border-radius: .5rem;">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12 col-sm-6 col-xl-4 bg-danger" style="height:.3rem;"></div>
-      <div class="col-12 col-sm-6 col-xl-4 bg-info" style="height:.3rem;"></div>
-      <div class="col-12 col-sm-6 col-xl-4 bg-warning" style="height:.3rem;"></div>
+<div class="pos-f-t">
+  <div class="collapse" id="navbarToggleExternalContent">
+    <div class="bg-dark p-4">
+      {% if  g.user %}
+      <a class="nav-category"  href="/">US</a>
+      <a class="nav-category"  href="/">World</a>
+      {% for c in category %}
+      <a class="nav-category"  href="/categories/{{c.name}}/articles">{{c.name}}</a>
+      {% endfor %}
+      {% endif %}
     </div>
-    <h1 style="text-transform:capitalize; position: relative; left: 40%;">
-      <div style="width:fit-content; padding:.4rem 1rem 1rem 1rem; border-radius:0.2rem; margin-top:5px; background-color:rgb(173, 216, 230); color: red;">{{cat.name}}
-      </div>
-    </h1>
   </div>
-  <div class="row">
-  {% for a in allarticle %}
-  {% if a.id in found_article %}                
-  <div class="col-12 col-sm-6 col-xl-4" style="margin-top:3rem;">         
+<nav class="navbar navbar-light" >
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" 
+          aria-controls="navbarToggleExternalContent" 
+          aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <button id="iBtn">Pnews</button>
+  <ul class="nav-ul" >
+    <li class="nav-li"><a href="/search" ><span class="fa fa-search" id="searchBtn"></span></a></li>
+    {% if not g.user %}   
+    <li class="nav-li"><a href="/register" class="nav-anchor">Sign up</a></li>
+    <li class="nav-li"><a href="/login" class="nav-anchor">Log in</a></li>
+    {% else %}
+    <li class="nav-li"><a href="/articles" class="nav-anchor">Articles</a></li>
+    <li class="nav-li"><a href="/categories" class="nav-anchor">Categories</a></li> 
+    <li class="nav-li"><a href="/sources" class="nav-anchor">Sources</a></li>              
+    <li class="nav-li"><a href="/users/favorites/{{session['username']}}" class="nav-anchor">Favorites</a></li>          
+    <li class="nav-li"><a href="/logout"  class="nav-anchor">Log out</a></li>
+    {% endif %}           
+  </ul>
+</nav>
+<div class="container-fluid containerBody">
+  <div class="row rowColor">
+    <div class="col-12 col-sm-6 col-xl-4 bg-danger barHeight"></div>
+    <div class="col-12 col-sm-6 col-xl-4 bg-info barHeight"></div>
+    <div class="col-12 col-sm-6 col-xl-4 bg-warning barHeight"></div>
+  </div>
+  {% if  g.user %}
+  <div class="row"> 
+  {% for a in article %}
+  {% if a.id in found_article %}                 
+  <div class="col-12 col-sm-6 col-xl-4 maincard" >         
     <div class="card">
-      <img src="{{a.Image_URL}}" class="card-img-top" alt=""> 
-      <div class="card-body">
-        <div>
-          <a class="card-text" href={{a.url}}>{{a.title}}</a>
-          <button type="button" class="btn btn-light btn-sm" id="removefavorite"> 
-            <img src='/static/images/favorite.png' style="width: 1.5rem; height: 1.5rem;" alt="submit form">
-          </button> 
-        </div> 
-      </div>       
-    </div>
+      <img src="{{a.Image_URL}}" class="card-img-top cardimg" alt=""> 
+      <div class="card-body">          
+        <a class="card-text" href={{a.url}}>
+          <p>{{a.title}}</p>
+        </a>
+        <small>{{a.description}}</small> 
+        <button type="button" class="btn btn-light btn-sm makefavorite" data-id="{{a.id}}">
+          <img src='/static/images/favorite.png' class="imgicon" alt="submit form">
+        </button>            
+      </div>
+    </div>       
   </div>
    {% else %}          
-    <div class="col-12 col-sm-6 col-xl-4" style="margin-top:3rem ;">
-      <div class="card">
-        <img src="{{a.Image_URL}}" class="card-img-top" alt=""> 
-        <div class="card-body">
-          <div>
-            <a class="card-text" href={{a.url}}>{{a.title}}</a>
-            <button type="button" class="btn btn-light btn-sm makefavorite" data-id="{{a.id}}"> 
-              <img src='/static/images/makefavorite.png' style="width: 1.5rem; height: 1.5rem;" alt="submit form">
-            </button> 
-        </div>            
+    <div class="col-12 col-sm-6 col-xl-4 maincard">
+      <div class="card" style="height: 100%">
+        <img src="{{a.Image_URL}}" class="card-img-top cardimg" alt=""> 
+        <div class="card-body" >          
+          <a class="card-text" href={{a.url}}>
+            <p>{{a.title}}</p>
+          </a>
+          <small>{{a.description}}</small> 
+          <button type="button" class="btn btn-light btn-sm makefavorite" data-id="{{a.id}}"> 
+            <img src='/static/images/makefavorite.png' class="imgicon" alt="submit form">
+          </button>           
         </div>       
       </div>
     </div> 
   {% endif %} 
+  {% endfor %}        
+</div> 
+{% else %} 
+<div class="row">
+  {% for a in article %}
+  <div class="col-12 col-sm-6 col-xl-4 maincard">         
+    <div class="card" style="height: 100%">
+      <img src="{{a.Image_URL}}" class="card-img-top cardimg" alt=""> 
+      <div class="card-body">          
+          <a class="card-text" href={{a.url}}>
+            <p>{{a.title}}</p>
+          </a>
+          <small>{{a.description}}</small>            
+      </div>       
+    </div>
+  </div>
   {% endfor %} 
-    </div> 
-  </div>  
-
+</div>
+{% endif %}   
+</div>
+</div>
 {% endblock %}
+
+

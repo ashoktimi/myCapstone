@@ -3,13 +3,14 @@ import requests
 import json
 import psycopg2
 from flask import Flask, render_template, request, flash, redirect, session, jsonify, g, abort
-from mypackage.models import Category, connect_db, db, Article, User, Favorite
-from mypackage.forms import RegisterForm, LoginForm, DeleteForm, UserFavoriteArticleForm
+from mypackage.models import Category, connect_db, db, Article, User, Favorite, CategoryArticle, Source
+from mypackage.forms import RegisterForm, LoginForm, DeleteForm
 from flask_debugtoolbar import DebugToolbarExtension
 from werkzeug.exceptions import Unauthorized
 from sqlalchemy.exc import IntegrityError
 from mypackage.apidata import SUPER_SECRET_KEY
 API_SECRET_KEY = SUPER_SECRET_KEY
+API_BASE_URL = "https://newsapi.org/v2"
 
 CURR_USER_KEY = "username"
 
@@ -48,16 +49,40 @@ def do_logout():
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
 
-
 ##############################################################################################################
 # API ROUTE BELOW HERE
-####### route for query parameter ############
-@app.route('/api/get_articles/query_data/<qvalue>')
+####### Route For Query Parameters ############
+
+# search news by title, description or content 
+# Multiple options can be specified by separating them with a comma, for example: title,content.
+@app.route('/api/get_articles/<qvalue>')
 def search_data(qvalue):
-    response = requests.get("https://newsapi.org/v2/everything", params={'q':qvalue, 'apiKey':API_SECRET_KEY})
+    response = requests.get("https://newsapi.org/v2/everything", 
+    params={'q':qvalue, 'apiKey':API_SECRET_KEY})
     res = response.json()
     return res
 
+@app.route('/api/cat_articles/<categoryvalue>')
+def search_category(categoryvalue):
+    response = requests.get("https://newsapi.org/v2/top-headlines/sources", 
+    params={'category':categoryvalue, 'apiKey':API_SECRET_KEY})
+    res = response.json()
+    return res
+
+@app.route('/api/get_articles/<qvalue>/<sortvalue>')
+def sort_data(qvalue, sortvalue):
+    response = requests.get("https://newsapi.org/v2/everything", 
+    params={'q':qvalue, 'sortBy':sortvalue, 'apiKey':API_SECRET_KEY})
+    res = response.json()
+    return res
+
+### search news by date. (from -to)date are required in the format of (YYYY-MM-DD)
+@app.route('/api/get_articles/<qvalue>/<fromdate>/<todate>')
+def date_Article(qvalue,fromdate,todate ):
+    response = requests.get("https://newsapi.org/v2/everything", 
+    params={'q':qvalue, 'from':fromdate, 'to':todate, 'apiKey':API_SECRET_KEY})
+    res = response.json()
+    return res
 
 ################### route for user #############
 @app.route('/api/users/<int:user_id>')
@@ -162,21 +187,102 @@ def list_articles(cate_id):
 
 
 
-@app.route('/api/categories/<int:cate_id>/articles', methods=["POST"])
+@app.route('/api/categories/articles', methods=["POST"])
 def create_article():
     """Creates a new article and returns JSON of that created article"""
     data = request.json
-    new_article = Article(author=data["author"], 
-                       title=data["title"],
-                       description=data["description"],
-                       url=data["url"],                       
-                       published_date=data["published_date"],
-                       content=data["content"])
+    article = Article.query.filter_by(title=data["title"]).first()
+    if article != None:
+        print("alreday in the database")
+        response_json = "hello"
+    else:
+        new_article = Article(author=data["author"], 
+                           title=data["title"],
+                           description=data["description"],
+                           url=data["url"], 
+                           Image_URL=data["Image_URL"],                    
+                           published_date=data["published_date"]
+                           )
+        db.session.add(new_article)
+        db.session.commit()
+        domainvalue = data["url"].split("/")[2]
+        res = requests.get(f"{API_BASE_URL}/top-headlines/sources",
+                            params={'apiKey':API_SECRET_KEY})
+        results = res.json()    
+        def name_list1():
+            return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="general" if x['language']=='en' ]
+        def name_list2(): 
+            return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="business" if x['language']=='en']
+        def name_list3(): 
+            return[x['url'].split("/")[2] for x in results['sources'] if x['category']=="technology" if x['language']=='en']
+        def name_list4(): 
+            return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="entertainment" if x['language']=='en']
+        def name_list5(): 
+            return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="science" if x['language']=='en']
+        def name_list6(): 
+            return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="sports" if x['language']=='en']
+        def name_list7(): 
+            return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="health" if x['language']=='en']
+        g= [*set(name_list1())]
+        b= [*set(name_list2())]
+        t= [*set(name_list3())]
+        e= [*set(name_list4())]
+        s= [*set(name_list5())]
+        sp= [*set(name_list6())]    
+        h = [*set(name_list7())]
 
-    db.session.add(new_article)
-    db.session.commit()
-    response_json = jsonify(article=new_article.serialize())
+        article = Article.query.filter_by(title=data["title"]).first()
+        if domainvalue in g:
+            category = Category.query.filter_by(name="general").first()              
+            new_cat_article = CategoryArticle(category_id=category.id, article_id=article.id)
+            db.session.add(new_cat_article)
+            db.session.commit() 
+
+        if domainvalue in b:
+            category = Category.query.filter_by(name="business").first()
+            new_cat_article = CategoryArticle(category_id=category.id, article_id=article.id)
+            db.session.add(new_cat_article)
+            db.session.commit() 
+
+        if domainvalue in t:
+            category = Category.query.filter_by(name="technology").first()
+            new_cat_article = CategoryArticle(category_id=category.id, article_id=article.id)
+            db.session.add(new_cat_article)
+            db.session.commit() 
+
+        if domainvalue in e:
+            category = Category.query.filter_by(name="entertainment").first()
+            new_cat_article = CategoryArticle(category_id=category.id, article_id=article.id)
+            db.session.add(new_cat_article)
+            db.session.commit() 
+
+        if domainvalue in s:
+            category = Category.query.filter_by(name="science").first()
+            new_cat_article = CategoryArticle(category_id=category.id, article_id=article.id)
+            db.session.add(new_cat_article)
+            db.session.commit() 
+    
+        if domainvalue in sp:
+            category = Category.query.filter_by(name="sports").first()
+            new_cat_article = CategoryArticle(category_id=category.id, article_id=article.id)
+            db.session.add(new_cat_article)
+            db.session.commit() 
+
+        if domainvalue in h:
+            category = Category.query.filter_by(name="health").first()
+            new_cat_article = CategoryArticle(category_id=category.id, article_id=article.id)
+            db.session.add(new_cat_article)
+            db.session.commit() 
+
+
+        response_json = jsonify(article = new_article.article_serialize())
     return (response_json, 201)
+
+def create_category_article(cat,art):
+    new_cat_article = CategoryArticle(category_id=cat.id, article_id=art.id)
+    db.session.add(new_cat_article)
+    db.session.commit() 
+
 
 @app.route('/api/categories/<int:cate_id>/articles/<int:article_id>', methods=["PATCH"])
 def update_article(article_id):
@@ -210,17 +316,18 @@ def delete_article(article_id):
 def index_page():
     """Renders html template that includes some JS - NOT PART OF JSON API!"""
     category = Category.query.all()
-    article = Article.query.all()
-    return render_template('index.html', article=article, category=category)
-    # return render_template('base.html')
-
+    article = Article.query.limit(41).all()
+    source = Source.query.limit(33).all()
+    c=Category.query.filter_by(name="general").first()
+    catart = c.category_article
+    return render_template('homepage.html', article=article, category=category, source=source, catart=catart)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     """Register a user: produce form and handle form submission."""
 
     if "username" in session:
-        return redirect("/article")
+        return redirect("/articles")
 
     form = RegisterForm()
 
@@ -264,7 +371,7 @@ def login():
         if user:
             session['username'] = user.username
             flash(f"Hello, {user.username}!", "success")
-            return redirect(f"/category")
+            return redirect(f"/articles")
         else:
             form.username.errors = ["Invalid username/password."]
             return render_template("user/login.html", form=form)
@@ -275,17 +382,13 @@ def login():
 @app.route("/logout")
 def logout():
     """Handle logout of user."""
-
     do_logout()
-    
-    # session.pop("username")
-
     flash("You have successfully logged out.", 'success')
-    return redirect("/")
+    return redirect("/login")
 
 
 
-@app.route('/article')
+@app.route('/articles')
 def show_article():
     if "username" not in session:
         raise Unauthorized()
@@ -295,85 +398,53 @@ def show_article():
     favart = Favorite.query.filter_by(user_id=user.id)
     found_article = [a.favoriteArticle_id for a in favart]
     category = Category.query.all()
-    return render_template('index.html', article=article, category=category, favart=favart, found_article=found_article)
+    return render_template('article/show.html', 
+                            article=article, category=category, found_article=found_article)
 
 
-@app.route('/category')
+@app.route('/categories')
 def show_categories():
+    if "username" not in session:
+        raise Unauthorized()
     category = Category.query.all()
-    return render_template('category/show.html', category=category)
+    article = Article.query.all()
+    return render_template('category/show.html', category=category, article=article)
 
-@app.route('/category/<int:cat_id>')
-def show_category(cat_id):
+@app.route('/sources')
+def show_sources():
+    if "username" not in session:
+        raise Unauthorized()
+    category = Category.query.all()
+    source_data = Source.query.all()
+    source = db.session.query(Source.category).distinct().all()
+    return render_template('category/source.html', category=category, 
+            sources=source, source_data=source_data)
+
+
+@app.route('/categories/<cat_name>/articles')
+def show_category(cat_name):
     if "username" not in session:
         raise Unauthorized()
     username = session['username']
-    category = Category.query.get(cat_id)
-    catart = category.category_article
+    category=Category.query.all()
+    c=Category.query.filter_by(name=cat_name).first()
+    catart = c.category_article
     user = User.query.filter_by(username=username).first()
     favart = Favorite.query.filter_by(user_id=user.id)
     found_article = [a.favoriteArticle_id for a in favart]
-    return render_template('article/show.html', allarticle=catart, cat=category, favart=favart, found_article=found_article)
+    return render_template('category/article.html', 
+                            allarticle=catart, cat=cat_name, category=category, found_article=found_article)
 
 
 @app.route('/users/favorites/<username>')
 def favorite_page(username):
     if "username" not in session or username != session['username']:
         raise Unauthorized()
+    category=Category.query.all()
     user = User.query.filter_by(username=username).first()
-    # article = Favorite.query.filter_by(user_id=user.id)
     article = user.user_article
     return render_template("/user/favorites.html", 
-                            article=article, user=user)
-
-# @app.route('/users/favorite/<int:article_id>', methods=['POST'])
-# def add_article_to_favorite(article_id):
-#     if not g.user:
-#         flash("Access unauthorized.", "danger")
-#         return redirect("/")
-#     article = Article.query.get_or_404(article_id)
-#     username = g.user
-#     user = User.query.filter_by(username=username).first()
-#     user_id = user.id
-#     u_a = Favorite(user_id=1, article_id=article_id)
-#     db.session.add(u_a)
-#     db.session.commit()
-#     g.user.user_article.append(article)
-#     return redirect(f"/users/favorites/{g.user}")
-
-
-@app.route("/users/favorites/add_article/<username>", methods=["GET", "POST"])
-def add_song_to_playlist(username):
-    """Handle add-article to favorite form:"""
-
-    if "username" not in session or username != session['username']:
-        raise Unauthorized()
-
-    user = User.query.filter_by(username=username).first()
-    user_id = user.id   
-    form = UserFavoriteArticleForm()
-
-#   # Restrict form to article not already on this favorite
-
-    # curr_on_favorite = [s.title for s in user.user_article]
-    form.article.choices = (1)
-    # form.article.choices = (db.session.query(Article.title))
-                    #   .filter(Article.title.notin_(curr_on_favorite))
-                    #   .all())
-
-    # if form.validate_on_submit():     
-    #     favorite_article = Favorite(user_id=user_id,
-    #                               article_id=form.article.data)
-    #     db.session.add(favorite_article)
-    #     db.session.commit()
-    #     return redirect(f"/favorites/{username}")
-
-    return render_template("user/add_favorite.html",
-                        #  user=user,
-                         form=form)
-
-
-
+                         user=user, category=category, article=article)
 
 @app.route('/favorites/articles/<int:id>')
 def add_favorite(id):
@@ -398,7 +469,160 @@ def add_favorite(id):
     return redirect (f"/users/favorites/{username}")
 
 
-API_BASE_URL = "https://newsapi.org/v2"
+@app.route('/search')
+def search_page():
+    return render_template("/searchform.html")
+@app.route('/sortdata')
+def sort_page():
+    qvalue = request.form['q']
+    return render_template("/filterpage.html", qvalue=qvalue)
 
-res = requests.get(f"{API_BASE_URL}/top-headlines/sources",
-                        params={'apiKey':API_SECRET_KEY})
+
+@app.route('/demo')
+def demo_page():
+    return render_template('/demo.html')
+
+
+
+@app.route('/filter')
+def filter_date():
+    return render_template("/filterpage.html")
+# @app.route('/')
+# def demmo_page():
+#     if "username" not in session:
+#         raise Unauthorized()
+#     username = session['username']
+#     user = User.query.filter_by(username=username).first()
+#     article = Article.query.all()
+#     return render_template("demo.html", article=article, user=user)
+
+
+# @app.route('/addArticles')
+# def add_article(title, desc, author, pub_data, url, Image_URL):
+#     """Creates a new article and returns JSON of that created article"""
+#     if "username" not in session:
+#         raise Unauthorized()
+#     domainvalue = url.split("/")[2]
+#     res = requests.get(f"{API_BASE_URL}/top-headlines/sources",
+#                         params={'apiKey':API_SECRET_KEY})
+#     results = res.json()    
+#     def name_list1():
+#         return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="general" if x['language']=='en' ]
+#     def name_list2(): 
+#         return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="business" if x['language']=='en']
+#     def name_list3(): 
+#         return[x['url'].split("/")[2] for x in results['sources'] if x['category']=="technology" if x['language']=='en']
+#     def name_list4(): 
+#         return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="entertainment" if x['language']=='en']
+#     def name_list5(): 
+#         return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="science" if x['language']=='en']
+#     def name_list6(): 
+#         return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="sports" if x['language']=='en']
+#     def name_list7(): 
+#         return[x['url'].split("/")[2]  for x in results['sources'] if x['category']=="health" if x['language']=='en']
+
+#     g= [*set(name_list1())]
+#     b= [*set(name_list2())]
+#     t= [*set(name_list3())]
+#     e= [*set(name_list4())]
+#     s= [*set(name_list5())]
+#     sp= [*set(name_list6())]    
+#     h = [*set(name_list7())]
+
+#     new_article = Article(author=author, 
+#                    title=title,
+#                    description=desc,
+#                    url=url,
+#                    Image_URL=Image_URL,                   
+#                    published_date=pub_data
+#                    )
+#     db.session.add(new_article)
+
+#     if domainvalue in g:
+#         category = Category.query.filter_by(name="general").first()
+#         category_id = category.id
+#         if article is not None:
+#             article = Article.query.filter_by(title=title).first()
+#             article_id = article.id
+#             new_cat_article = CategoryArticle(category_id=category_id, article_id=article_id)
+#             db.session.add(new_cat_article)
+#             db.session.commit()  
+
+#     if domainvalue in b:
+#         category = Category.query.filter_by(name="business").first()
+#         category_id = category.id
+#         if article is not None:
+#             article = Article.query.filter_by(title=title).first()
+#             article_id = article.id
+#             new_cat_article = CategoryArticle(category_id=category_id, article_id=article_id)
+#             db.session.add(new_cat_article)
+#             db.session.commit()
+        
+#     if domainvalue in t:
+#         category = Category.query.filter_by(name="technology").first()
+#         category_id = category.id
+#         if article is not None:
+#             article = Article.query.filter_by(title=title).first()
+#             article_id = article.id
+#             new_cat_article = CategoryArticle(category_id=category_id, article_id=article_id)
+#             db.session.add(new_cat_article)
+#             db.session.commit()
+    
+#     if domainvalue in e:
+#         category = Category.query.filter_by(name="entertainment").first()
+#         category_id = category.id
+#         if article is not None:
+#             article = Article.query.filter_by(title=title).first()
+#             article_id = article.id
+#             new_cat_article = CategoryArticle(category_id=category_id, article_id=article_id)
+#             db.session.add(new_cat_article)
+#             db.session.commit()
+
+#     if domainvalue in s:
+#         category = Category.query.filter_by(name="science").first()
+#         category_id = category.id
+#         if article is not None:
+#             article = Article.query.filter_by(title=title).first()
+#             article_id = article.id
+#             new_cat_article = CategoryArticle(category_id=category_id, article_id=article_id)
+#             db.session.add(new_cat_article)
+#             db.session.commit()
+  
+#     if domainvalue in sp:
+#         category = Category.query.filter_by(name="sports").first()
+#         category_id = category.id
+#         if article is not None:
+#             article = Article.query.filter_by(title=title).first()
+#             article_id = article.id
+#             new_cat_article = CategoryArticle(category_id=category_id, article_id=article_id)
+#             db.session.add(new_cat_article)
+#             db.session.commit()
+       
+#     if domainvalue in h:
+#         category = Category.query.filter_by(name="health").first()
+#         category_id = category.id
+#         if article is not None:
+#             article = Article.query.filter_by(title=title).first()
+#             article_id = article.id
+#             new_cat_article = CategoryArticle(category_id=category_id, article_id=article_id)
+#             db.session.add(new_cat_article)
+#             db.session.commit()
+
+#     return redirect("/")
+
+    # username = session['username']
+    # user = User.query.filter_by(username=username).first()    
+    # favart =  user.user_article 
+    # found_article = [a.id for a in favart]
+    # article = Favorite.query.filter_by(favoriteArticle_id=id).filter_by(user_id=user.id).first()
+    # if id in found_article:
+    #     db.session.delete(article)
+    #     db.session.commit()    
+    # else:
+    #     new_fav = Favorite(user_id=user.id, 
+    #                    favoriteArticle_id=id
+    #                    )
+    #     db.session.add(new_fav)
+    #     db.session.commit()
+
+    # return redirect (f"/users/favorites/{username}")

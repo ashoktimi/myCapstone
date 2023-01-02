@@ -108,22 +108,17 @@ class Article(db.Model):
     url = db.Column(db.Text)
     Image_URL =db.Column(db.Text)
     published_date = db.Column(db.DateTime, nullable=False)
-    content =  db.Column(db.Text) 
-
-
-
 
     def article_serialize(self):
         return{
-            'id':self.id,
             'author':self.author,
             'title':self.title,
             'description': self.description,
             'url':self.url,
             'Image_URL':self.Image_URL,
-            'published_date':self.published_date,
-            'content':self.content
+            'published_date':self.published_date
         }
+
 
 
 class CategoryArticle(db.Model):
@@ -135,8 +130,26 @@ class CategoryArticle(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id', ondelete='CASCADE'), nullable=False)
     article_id = db.Column(db.Integer, db.ForeignKey('articles.id', ondelete='CASCADE'), nullable=False)
 
+    def category_article_serialize(self):
+        return{
+            'category_id':self.category_id,
+            'article_id':self.article_id
+        }
 
 
 
+class Source(db.Model):
     
+    __tablename__ = 'sources'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    source_id = db.Column(db.String, nullable=True)
+    name = db.Column(db.String, nullable=True)
+    description = db.Column(db.String, nullable=True)
+    url = db.Column(db.Text)
+    category = db.Column(db.String, nullable=False)
+    language = db.Column(db.String, nullable=True)
+    country = db.Column(db.String, nullable=True)
+
+
 

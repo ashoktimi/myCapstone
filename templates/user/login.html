@@ -1,13 +1,11 @@
 {% extends 'base.html' %}
-
-{% block title %}
-Create User
-{% endblock %}
-
 {% block content %}
-
-<h1>Login a user</h1>
-<form method="POST" id="user-login-form">
+<style>
+  body{background-color:rgb(194, 226, 238);}
+</style>
+<div class="userdiv">
+<h1>Login to your account</h1>
+<form method="POST" id="user-login-form" class="userform">
 
   {{form.hidden_tag()}}
 
@@ -32,9 +30,10 @@ Create User
 
   {% endfor %}
 
-  <button class="btn btn-primary">Login!</button>
+  <button class="btn btn-info loginbtn">Login!</button>
 </form>
-<p>Don't have an accout? <a style="color:rgb(135, 206, 235) ;" 
-                            href="/register">Sign Up</a></p>
+<p>Don't have an accout? <a href="/register">Sign Up</a></p>
+
+</div>
 
 {% endblock %}

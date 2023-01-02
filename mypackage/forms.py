@@ -34,14 +34,5 @@ class RegisterForm(FlaskForm):
 
     image_url = StringField('(Optional) Image URL')
 
-
-
-
-class UserFavoriteArticleForm(FlaskForm):
-    """Form for adding a song to playlist."""
-
-    article = SelectField('Add to Favorite', coerce=int)
-
-
 class DeleteForm(FlaskForm):
     """Delete form -- this form is intentionally blank."""

@@ -1,46 +1,187 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Axios Requests</title>
-
-</head>
-
-<body>
-  <form id="new-user-form">
-    <div class="form-group row">
-        <div class="col-6">
-            <div >
-                <label for="form-flavor">Flavor: </label>
-                <input name="flavor" id="form-flavor">
-            </div>
-
-            <div >
-                <label for="form-size">Size: </label>
-                <input name="size" id="form-size">
-            </div>
-
-            <div>
-                <label for="form-rating">Rating: </label>
-                <input type="number" name="rating" id="form-rating">
-            </div>
-
-            <div>
-                <label for="form-image">Image: </label>
-                <input name="image" id="form-image">
-            </div>
-            <button type="submit">Add!</button>
-        </div>
+{% extends 'base.html' %}
+{% block title %}
+Create User
+{% endblock %}
+<link rel="stylesheet" href="/static/style.css">
+{% block content %}
+<!-- 
+<div class="container-fluid" style="background-color:rgb(255, 255, 255); padding-top:5px; border-radius: .5rem;">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12 col-sm-6 col-xl-4 bg-danger" style="height:.3rem;"></div>
+      <div class="col-12 col-sm-6 col-xl-4 bg-info" style="height:.3rem;"></div>
+      <div class="col-12 col-sm-6 col-xl-4 bg-warning" style="height:.3rem;"></div>
     </div>
+  </div>
+    <div class="row">
+      {% for a in article %}
+      <div class="col-12 col-sm-6 col-xl-4" style="margin-top:2rem; width: auto; height: 450px;">         
+        <div class="card" style="height: 100%">
+          <img src="{{a.Image_URL}}" class="card-img-top" 
+          style="height: 230px; width: 96%; margin:2%; background-color: bisque;" alt=""> 
+          <div class="card-body cardbody">          
+              <a class="card-text cardclass" href={{a.url}}>
+                <p class="titleclass">{{a.title}}</p>
+              </a>
+              <small class="contentclass">{{a. description}}.</small>
+              {% if a.author != None %} 
+                <h10>{{a.author}}</h10>
+              {% endif %}            
+              <button type="button" class="btn btn-light btn-sm favaddarticle"  data-url={{a.url}} data-id={{a.published_date}}>
+                        <img src='/static/images/makefavorite.png' style="width: 1.5rem; height: 1.5rem;" alt="submit form">
+              </button>              
+          </div>       
+        </div>
+      </div>
+      <ul>
+        <li>{{a.author}}</li>
+      </ul>
+      {% endfor %} 
+    </div> 
+  </div>
+  <script src="static/app.js"></script> -->
 
-  <button class="btn btn-primary">Sign up!</button>
-</form>
+  <!-- <div class="sort-container">
+    <label for="sort">Sort by:</label>
+    <select id="sort" name="sort">                
+      <option value="relevancy" >relevancy</option>
+      <option value="popularity" selected >popularity</option>
+      <option value="publishedAt">publishedAt</option>
+    </select>
+  </div> -->
 
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script src="static/app.js"></script>
-</body>
+    <form action="#" name="myForm" id="myForm">
+      <div class="formBox">
+        <input type="text" id="thing" name="thing" />
+      </div>
 
-</html>
+      <div class="formBox">
+        <select id="flavours" name="flavours" multiple>
+            <option value="dust">Dust</option>
+            <option value="beer" selected>Beer</option>
+            <option value="cheese">Cheese</option>
+        </select>
+      </div>
+      <div class="formBox buttons">
+        <button id="btnSend">Send</button>
+      </div>
+    </form>
+
+
+
+      <script>
+      document.addEventListener('DOMContentLoaded', (e) => {
+        e.preventDefault()
+        document
+          .getElementById('flavours')
+          .addEventListener('input', handleSelect);
+        document.getElementById('btnSend')
+        .addEventListener('submit', handleData)
+        // .addEventListener('input', handleData);
+      });
+
+      function handleSelect(ev) {
+        ev.preventDefault()
+        let select = ev.target;
+
+        console.log(select.value);
+      }
+      function handleData(ev) {
+        ev.preventDefault()
+        // let thing = $("#thing").val();
+        let theInput = ev.target;
+        console.log(theInput.value);
+        // console.log(thing)
+      }
+    </script>
+
+
+
+
+
+
+
+
+<!-- {% for article in result %}:
+<div class="col-sm-6 col-xl-4" style="margin-top:1rem;">
+  <div class="card">
+    <img src="{{article['urlToImage']}}" class="card-img-top" alt=""> 
+      <div class="card-body">
+        <a class="card-text cardclass" href="{{article['url']}}">
+          <p class="titleclass" >{{article['title']}}</p>
+        </a>
+        <small>{{article['description']}}</small>
+        _
+        <h10>{{article.author}}</h10>                    
+      </div>
+  </div>        
+</div> 
+  <p>{</p>
+{% endfor %} -->
+<script src="static/app.js"></script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+  <div>
+    <div class="pos-f-t">
+      <div class="collapse" id="navbarToggleExternalContent">
+        <div class="bg-dark p-4 navshowhide">
+          {% if  g.user %}
+          {% for c in category %}
+           <h2 class="nav-category"><a href="/category/{{c.id}}">{{c.name}}</a></h2>
+          {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+      <nav class="navbar navbar-light" >
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" 
+                  aria-controls="navbarToggleExternalContent" 
+                  aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <ul class="nav-ul" >
+            <li class="nav-li"><a href="/" class="newsname">Pnews</a></li>
+            {% if not g.user %}
+            {% if request.endpoint != None %}            
+            <li class="nav-li"><a href="/search"><span class="fa fa-search" id="searchBtn"></span></a></li>
+            {% endif %}            
+            <li class="nav-li"><a href="/register" class="nav-anchor">Sign up</a></li>
+            <li class="nav-li"><a href="/login" class="nav-anchor">Log in</a></li>
+            {% else %}             
+            <li class="nav-li"><span class="fa fa-search" id="searchBtn"></span></li>
+            <li class="nav-li"><a href="/article" class="nav-anchor">Articles</a></li>
+            <li class="nav-li"><a href="/category" class="nav-anchor">Categories</a></li>          
+            <li class="nav-li"><a href="/users/favorites/{{session['username']}}" class="nav-anchor">Favorites</a></li>
+            <li class="nav-li">
+              <label for="sort">Sort by:</label>
+              <select id="sort">                
+                <option value="volvo">relevancy</option>
+                <option value="volvo">popularity</option>
+                <option value="volvo">publishedAt</option>
+              </select>
+            </li>            
+            <li class="nav-li"><a href="/logout"  class="nav-anchor">Log out</a></li>
+            {% endif %}           
+          </ul>
+      </nav>
+    </div> 
+  </div>  -->
+    <!-- <div class="container-fluid">
+    <div class="row">
+      <div class="col-12 col-sm-6 col-xl-4 bg-danger barcolor"></div>
+      <div class="col-12 col-sm-6 col-xl-4 bg-info barcolor"></div>
+      <div class="col-12 col-sm-6 col-xl-4 bg-warning barcolor"></div>
+    </div>
+  </div>

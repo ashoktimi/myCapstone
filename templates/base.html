@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <title>capstone</title>
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" 
   integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
   crossorigin="anonymous">
@@ -15,66 +14,18 @@
   <link rel="stylesheet"
         href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
   <link rel="stylesheet" href="/static/style.css">
-  <link rel="shortcut icon" href="/static/favicon.ico">
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
-  <div>
-    <div class="pos-f-t">
-      <div class="collapse" id="navbarToggleExternalContent">
-        <div class="bg-dark p-4" style="column-gap: normal; column-count: 2; grid-column-start: span; margin-left:5px ;">
-          {% if  g.user %}
-          {% for c in category %}
-           <h2 class="nav-category"style="text-transform:uppercase; margin-left:15%;"><a href="/category/{{c.id}}">{{c.name}}</a></h2>
-          {% endfor %}
-          {% endif %}
-        </div>
-      </div>
-      <nav class="navbar navbar-light" style="background-image: url('/static/images/nav-bg.png')">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" 
-                aria-controls="navbarToggleExternalContent" 
-                aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>  
-        <a href="/" style="margin-left: 17px; text-decoration:none;">
-          <h1 style="font-weight:.3rem; font-style:bold;">@news</h1>
-        </a> 
-          <ul id="nav-ul" >           
-          {% if not g.user %}
-          <li style=" float: left;"><a href="/register" id="nav-anchor">Sign up</a></li>
-          <li style=" float: left;"><a href="/login" id="nav-anchor">Log in</a></li>
-          {% else %}  
-          {% if request.endpoint != None %}      
-          <li style="float:left;">             
-            <form class="navbar-form navbar-right" id="myForm">
-              <input type="text" name="q" class="form-control" placeholder="Search News" id="search" required>
-              <button class="btn btn-default" id="submitBtn" type="submit">
-                <span class="fa fa-search"></span>
-              </button>
-            </form>
-          </li>
-          {% endif %}
-          <li style=" float: left;"><a href="/article" id="nav-anchor">Articles</a></li>
-          <li style=" float: left;"><a href="/category" id="nav-anchor">Categories</a></li>          
-          <li style=" float: left;"><a href="/users/favorites/{{session['username']}}" id="nav-anchor">Favorites</a></li>
-          <li style=" float: left;"><a href="/logout"  id="nav-anchor">Log out</a></li>
-          {% endif %}           
-          </ul>
-      </nav>
-    </div> 
-  </div>
-
-<div class="container-fluid maincontent" style="width: 80%; margin-top: 3rem ;">
+<div class="maincontent">
   {% for category, message in get_flashed_messages(with_categories=True) %}
-  <div class="alert alert-{{ category }}">{{ message }}</div>
+  <div class="alert alert-{{ category }}" style="width: fit-content;">{{ message }}</div>
   {% endfor %} 
   {% block content %}
   {% endblock %}
 </div>
-<div class="container-fluid maincontainer" style="width: 70%; position: relative; left: 6%"> 
-  <p style="margin-top:5rem; display:block; position: relative; left: 2%; color:black; font-weight: bold;"></p>   
-  <div class="row container">
-  </div>
+<div class="container-fluid maincontainer" style="display:flex; justify-content: center;">
+  <div class="row container"></div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"
 integrity="sha256-T/f7Sju1ZfNNfBh7skWn0idlCBcI3RwdLSS4/I7NQKQ=" crossorigin="anonymous"></script>
